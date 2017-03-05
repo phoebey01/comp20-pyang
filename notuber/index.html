@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Notuber</title>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDovH1FriBbsplhOxBFMOR7HvDadFVxf2g&sensor=true"></script>
+	<link rel="stylesheet" href="style.css" />
+
+	<script>	
+		var lat = 0;
+		var lng = 0;
+		var me = new google.maps.LatLng(lat, lng);
+		var myOptions =	{
+			zoom: 13,
+			center: me,
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		};
+		var map;
+		var userImage;
+		var image;
+		var objects;
+		var infowindow = new google.maps.InfoWindow();
+
+		function initMap() {
+			map = new google.maps.Map(document.getElementById('map'), myOptions);
+			getLocation();
+		}
+
+
+		function getLocation() {
+			if (!navigator.geolocation){
+				output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+	    		return;
+			}
+
+			function success(position){
+				lat = position.coords.latitude;
+        	  	lng = position.coords.longitude;
+         		getData();
+			}
+
+			function error(){
+				output.innerHTML = "Unable to retrieve your location"
+			}
+
+ 			navigator.geolocation.getCurrentPosition(success, error);
+           
+ 		}
+
+ 		function getData(){
+ 			var xhr = new XMLHttpRequest();
+ 			var url = "https://defense-in-derpth.herokuapp.com/submit";
+			var params = "username=tkaebPFC" + "&lat=" + lat + "&lng=" + lng;
+			xhr.open("POST", url, true);
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+			xhr.onreadystatechange = function (){
+				if (xhr.readyState == 4 && xhr.status == 200){
+					var data = JSON.parse(xhr.responseText);
+					var vehicles = data["vehicles"];
+					var passengers = data["passengers"];
+
+					if (vehicles != null){
+  						objects = vehicles;
+ 						//passenger icon 
+ 						userImage = "https://tuftsdev.github.io/WebProgramming/assignments/black_car.png";
+ 						image = "rocket.png";
+ 					} else if (passengers != null){
+ 						objects = passengers;
+ 						// driver icon
+ 						userImage = "rocket.png";
+ 						image = "https://tuftsdev.github.io/WebProgramming/assignments/black_car.png";
+ 					}
+
+					renderMap();
+				}
+			};
+			xhr.send(params);
+ 		}
+		
+ 		function renderMap(){	
+
+ 			me = new google.maps.LatLng(lat, lng);
+
+ 			map.panTo(me);
+ 			
+ 			var icon = {
+  				url: image, 
+ 		   		scaledSize: new google.maps.Size(80, 80), 
+    			origin: new google.maps.Point(0,0), 
+  				anchor: new google.maps.Point(0, 0) 
+			};
+
+ 			var marker = new google.maps.Marker({
+ 				position: me,
+ 				title: "tkaebPFC",
+ 				icon: icon
+ 			});
+ 			marker.setMap(map);
+
+ 			google.maps.event.addListener(marker, 'click', function() {
+ 				infowindow.setContent(marker.title);
+ 				infowindow.open(map, marker);
+ 			}); 
+
+ 			console.log(objects);
+
+ 			for (i = 0; i < objects.length; i++){
+				var username = objects[i].username;
+				var lat1 = objects[i].lat;
+				var lng1 = objects[i].lng;
+				var user = new google.maps.LatLng(lat1, lng1);
+				
+				var objectinfowindow = new google.maps.InfoWindow({
+					content: username
+				});
+
+				var userIcon = {
+  					url: userImage, 
+ 		   			scaledSize: new google.maps.Size(80, 40), 
+    				origin: new google.maps.Point(0,0), 
+  					anchor: new google.maps.Point(0, 0) 
+				};
+
+				var objectMarker = new google.maps.Marker({
+					position: user,
+					title: username,
+					icon: userIcon,
+					map: map,
+					infowindow: objectinfowindow
+				});
+
+				google.maps.event.addListener(objectMarker, 'click', function() {
+ 						this.infowindow.open(map, this);
+ 				}); 
+			}
+ 	}
+	
+  </script>
+
+ 
+
+</head>
+
+<body onload="initMap()">
+	<div id="map"></div>
+</body>
+</html>
+
