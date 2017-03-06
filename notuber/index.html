@@ -3,7 +3,7 @@
 <head>
 	<title>Notuber</title>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDovH1FriBbsplhOxBFMOR7HvDadFVxf2g&sensor=true"></script>
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDovH1FriBbsplhOxBFMOR7HvDadFVxf2g&sensor=true&libraries=geometry"></script>
 	<link rel="stylesheet" href="style.css" />
 
 	<script>	
@@ -15,6 +15,7 @@
 			center: me,
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		};
+		var myUsername = "tkaebPFC";
 		var map;
 		var userImage;
 		var image;
@@ -50,7 +51,7 @@
  		function getData(){
  			var xhr = new XMLHttpRequest();
  			var url = "https://defense-in-derpth.herokuapp.com/submit";
-			var params = "username=tkaebPFC" + "&lat=" + lat + "&lng=" + lng;
+			var params = "username=" + myUsername + "&lat=" + lat + "&lng=" + lng;
 			xhr.open("POST", url, true);
 			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
@@ -87,15 +88,16 @@
  			var icon = {
   				url: image, 
  		   		scaledSize: new google.maps.Size(80, 80), 
-    			origin: new google.maps.Point(0,0), 
+				origin: new google.maps.Point(0,0), 
   				anchor: new google.maps.Point(0, 0) 
 			};
 
  			var marker = new google.maps.Marker({
  				position: me,
- 				title: "tkaebPFC",
+ 				title: myUsername,
  				icon: icon
  			});
+
  			marker.setMap(map);
 
  			google.maps.event.addListener(marker, 'click', function() {
@@ -108,15 +110,17 @@
 				var lat1 = objects[i].lat;
 				var lng1 = objects[i].lng;
 				var user = new google.maps.LatLng(lat1, lng1);
-				
+				var distance = google.maps.geometry.spherical.computeDistanceBetween(user, me);
+				distance = distance * 0.000621371;
+				var contentString = '<h2 class="name">' + username + '</h2>' + '<p>' + '... is ' + distance + ' miles away from me'+ '</p>';
 				var objectinfowindow = new google.maps.InfoWindow({
-					content: username
+					content: contentString
 				});
 
 				var userIcon = {
   					url: userImage, 
  		   			scaledSize: new google.maps.Size(80, 40), 
-    				origin: new google.maps.Point(0,0), 
+					origin: new google.maps.Point(0,0), 
   					anchor: new google.maps.Point(0, 0) 
 				};
 
@@ -129,7 +133,7 @@
 				});
 
 				google.maps.event.addListener(objectMarker, 'click', function() {
- 						this.infowindow.open(map, this);
+ 					this.infowindow.open(map, this);
  				}); 
 			}
  	}
