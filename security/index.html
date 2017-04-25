@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HW4: Security</title>
+</head>
+<body>
+
+<h3>1. Introduction</h3>
+<p> This security assessment will document and resolve three major security and privacy issues in both the client-side and the server-side for The Black Car Service.
+</p>
+
+<h3>2. Methodology </h3>
+<p> The security vulnerabilities are discovered through a) curling the website with code injection, and b) examining the source code for bad coding practices that will cause security problems. The major tools employed for the assessment is Curl, Postman, and Google Developer Tool. 
+</p>
+
+<h3>3. Abstract of Findings</h3>
+<p>
+ - The three major issues are 1) cross site scripting: attackers can inject code and fold malicious content to the website which expose the vistors of the site to great dangers, 2) MongoDB injection: attackers can query the database with query string "key[$ne]=value" to access data in the database, 3) Junk insertion: attackers can keep making POST requests and insert junk data to the database until the space is exhausted.
+</p>
+
+
+ <h3>4. Issues Found </h3>
+ <h4>a.  Cross Site Scripting (XSS)</h4>
+ <p> 
+ 	- issue: type in <br>
+ 	curl --data "username=[script]alert('hoho')[/script]&lat=0$lng=0" or <br>
+ 	curl --data "username=[script]<img alt="malign url/injection">[/script]&lat=0$lng=0" on the terminal<br>
+	- alert window will popup at https://dry-journey-64231.herokuapp.com/ every time a user visits the site <br>
+	- location: https://dry-journey-64231.herokuapp.com/submit <br>
+	- high severity security issue <br>
+	- resolution: validate user input and don't process data with script tag or any tags in it. <br>
+	<img src="alert.png" alt="xss-example1"> <br>
+	<img src="xss-injection.png" alt="xss-example2"> <br>
+	
+</p>
+
+<h4>b. MongoDB Database Security</h4>
+<p>
+	- issue: type in https://dry-journey-64231.herokuapp.com/vehicle.json?username[$ne]=haha in the browser returns data which has username not equal to "haha" in the database <br>
+	- location: https://dry-journey-64231.herokuapp.com/vehicle.json? <br>
+	- high severity privacy isssue: if there is sensitive user data stored in the database, then the information will leak through a single query <br>
+	- resolution: check for query string, and dont execute the query if the string contains $. <br>
+	<img src="db-security.png" alt="db-injection"><br>
+
+</p>
+
+<h4>c. MongoDB Database Insertion</h4>
+<p>
+	- issue: attackers can keep inserting data to the database until the storage runs out<br>
+	- insertion code: <br>
+	for (var i=0; i<10000; i++){ <br>
+	$.post("https://dry-journey-64231.herokuapp.com/submit", <br>
+		{ <br>
+			username: i, 
+			lat: 0, 
+			lng: 0
+		}); <br>
+	}<br>
+	- location: https://dry-journey-64231.herokuapp.com/submit<br>
+	- medium severity: since the database is limited in space, it will quickly run out if attackers keep inserting junk to the database<br>
+	- resolution: we can resolve the issue by limiting the number of post requests from any IP address. for exmaple, we can set the number of max_request to be 10/hr for a given IP address and further requests would be rejected. example: http://stackoverflow.com/questions/14370717/limiting-the-number-of-request-from-any-given-ip-address <br>
+	<img src="explosion.png" alt="db-insertion"><br>
+</p>
+
+<h3>5. Conclusion</h3>
+<p>
+ - Always censor user input before executing any commands on the server-side to prevent cross-site scripting. <br>
+ - Use validator to get rid of any special characters to prevent code injection <br>
+ - Encrypt sensitive information <br>
+ - Check for irregular insertions <br>
+
+</p>
+
+<h3>6. References</h3>
+<p> 
+- mchow01/mongodb_injection_nodejs.txt https://gist.github.com/mchow01/49f8979829f1c488d922 <br>
+
+</p>
+
+</body>
+</html>
