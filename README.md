@@ -2,4 +2,4 @@
 2. My favorite assignment has been hw3 because it gave me the insight to the server-side. I learned how a server is set up and how it connects to the front-end. I think hw3 is an important piece in this class that gives me a sense of what web programming actually is.
 3. I've learned a lot about the web through comp20. The growth is significant, considering I only barely knew html and css before entering the class.
 4. My most important takeaway from this course is the self learning skill. I've learned the importance of constantly looking things up on google, stackoverflow and github. During the group project, we have to ask google all the time, for questions like figuring out which API to use and how to scrape data from websites, etc. 
-5. I will delve deeper into web/mobile development and learn about UI/UX in future. I also want to know what is going on at the system level, and how systems are designed and built. 
+5. I will delve deeper into web/mobile development and learn about UI/UX in future. I'm also planning to learn more about operating systems and internet distributed systems. 
