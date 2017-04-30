@@ -1,0 +1,3 @@
+native-notuber is an extension of notuber assignment. I convert the web app to a native android app using andriod studio. It serves the same functional purpose as Notuber/Black Car Services, but on the mobile platform. The android version is 4.03 (ICE CREAM SANDWICH). This directory contains the src/ of the app which is intended for future reference. The most important source code for conversion is in manifest.xml, MainActivity.java, and res/layout/content_main.xml. 
+
+Apr 29, 2017
